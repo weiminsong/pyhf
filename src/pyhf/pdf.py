@@ -473,6 +473,9 @@ class Model(object):
         tensorlib, _ = get_backend()
         return tensorlib.exp(self.logpdf(pars, data))
 
+    def sse(self, pars, data):
+        return self.logpdf(pars, data)  # FIXME: CHI2
+
 
 class Workspace(object):
     """

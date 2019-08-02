@@ -76,6 +76,12 @@ def loglambdav(pars, data, pdf):
     return -2 * pdf.logpdf(pars, data)
 
 
+def chi2(pars, data, pdf):
+    return pdf.sse(pars, data) # FIXME: CHI2
+
+def qchi2(mu, data, pdf, init_pars, par_bounds):
+    return qmu(mu, data, pdf, init_pars, par_bounds) # FIXME: CHI2
+
 def qmu(mu, data, pdf, init_pars, par_bounds):
     r"""
     The test statistic, :math:`q_{\mu}`, for establishing an upper
