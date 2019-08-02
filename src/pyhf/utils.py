@@ -77,10 +77,12 @@ def loglambdav(pars, data, pdf):
 
 
 def chi2(pars, data, pdf):
-    return pdf.sse(pars, data) # FIXME: CHI2
+    return pdf.sse(pars, data)  # FIXME: CHI2
+
 
 def qchi2(mu, data, pdf, init_pars, par_bounds):
-    return qmu(mu, data, pdf, init_pars, par_bounds) # FIXME: CHI2
+    return qmu(mu, data, pdf, init_pars, par_bounds)  # FIXME: CHI2
+
 
 def qmu(mu, data, pdf, init_pars, par_bounds):
     r"""
@@ -134,7 +136,7 @@ def generate_asimov_data(asimov_mu, data, pdf, init_pars, par_bounds):
     return pdf.expected_data(bestfit_nuisance_asimov)
 
 
-def pvals_from_teststat(sqrtqmu_v, sqrtqmuA_v, qtilde=False):
+def pvals_from_teststat(sqrtqmu_v, sqrtqmuA_v, test_statistic='q'):
     r"""
     The :math:`p`-values for signal strength :math:`\mu` and Asimov strength :math:`\mu'` as defined in Equations (59) and (57) of `arXiv:1007.1727`_
 
@@ -155,16 +157,16 @@ def pvals_from_teststat(sqrtqmu_v, sqrtqmuA_v, qtilde=False):
     Args:
         sqrtqmu_v (Number or Tensor): The root of the calculated test statistic, :math:`\sqrt{q_{\mu}}`
         sqrtqmuA_v (Number or Tensor): The root of the calculated test statistic given the Asimov data, :math:`\sqrt{q_{\mu,A}}`
-        qtilde (Bool): When ``True`` perform the calculation using the alternative test statistic, :math:`\tilde{q}`, as defined in Equation (62) of `arXiv:1007.1727`_
+        test_statistic (String): Choose from 'q', 'qtilde', 'qchi2'. 'qtilde' for example performs the calculation using the alternative test statistic, :math:`\tilde{q}`, as defined in Equation (62) of `arXiv:1007.1727`_
 
     Returns:
         Tuple of Floats: The :math:`p`-values for the signal + background, background only, and signal only hypotheses respectivley
     """
     tensorlib, _ = get_backend()
-    if not qtilde:  # qmu
+    if test_statistic == 'q':
         nullval = sqrtqmu_v
         altval = -(sqrtqmuA_v - sqrtqmu_v)
-    else:  # qtilde
+    elif test_statistic == 'qtilde':
         if sqrtqmu_v < sqrtqmuA_v:
             nullval = sqrtqmu_v
             altval = -(sqrtqmuA_v - sqrtqmu_v)
@@ -173,6 +175,8 @@ def pvals_from_teststat(sqrtqmu_v, sqrtqmuA_v, qtilde=False):
             qmu_A = tensorlib.power(sqrtqmuA_v, 2)
             nullval = (qmu + qmu_A) / (2 * sqrtqmuA_v)
             altval = (qmu - qmu_A) / (2 * sqrtqmuA_v)
+    elif test_statistic == 'qchi2':
+        pass  # FIXME: CHI2
     CLsb = 1 - tensorlib.normal_cdf(nullval)
     CLb = 1 - tensorlib.normal_cdf(altval)
     CLs = CLsb / CLb
@@ -206,7 +210,7 @@ def pvals_from_teststat_expected(sqrtqmuA_v, nsigma=0):
 
 
 def hypotest(
-    poi_test, data, pdf, init_pars=None, par_bounds=None, qtilde=False, **kwargs
+    poi_test, data, pdf, init_pars=None, par_bounds=None, test_statistics='q', **kwargs
 ):
     r"""
     Computes :math:`p`-values and test statistics for a single value of the parameter of interest
@@ -217,7 +221,7 @@ def hypotest(
         pdf (|pyhf.pdf.Model|_): The HistFactory statistical model
         init_pars (Array or Tensor): The initial parameter values to be used for minimization
         par_bounds (Array or Tensor): The parameter value bounds to be used for minimization
-        qtilde (Bool): When ``True`` perform the calculation using the alternative test statistic, :math:`\tilde{q}`, as defined in Equation (62) of `arXiv:1007.1727`_
+        test_statistic (String): Choose from 'q', 'qtilde', 'qchi2'. 'qtilde' for example performs the calculation using the alternative test statistic, :math:`\tilde{q}`, as defined in Equation (62) of `arXiv:1007.1727`_
 
     .. |pyhf.pdf.Model| replace:: ``pyhf.pdf.Model``
     .. _pyhf.pdf.Model: https://diana-hep.org/pyhf/_generated/pyhf.pdf.Model.html
@@ -295,7 +299,9 @@ def hypotest(
     )
     sqrtqmuA_v = tensorlib.sqrt(qmuA_v)
 
-    CLsb, CLb, CLs = pvals_from_teststat(sqrtqmu_v, sqrtqmuA_v, qtilde=qtilde)
+    CLsb, CLb, CLs = pvals_from_teststat(
+        sqrtqmu_v, sqrtqmuA_v, test_statistic=test_statistic
+    )
 
     _returns = [CLs]
     if kwargs.get('return_tail_probs'):

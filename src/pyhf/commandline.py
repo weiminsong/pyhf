@@ -226,7 +226,9 @@ def inspect(workspace, output_file, measurement):
 @click.option('--measurement', default=None)
 @click.option('-p', '--patch', multiple=True)
 @click.option('--testpoi', default=1.0)
-@click.option('--teststat', type=click.Choice(['q', 'qtilde']), default='qtilde')
+@click.option(
+    '--teststat', type=click.Choice(['q', 'qtilde', 'qchi2']), default='qtilde'
+)
 @click.option('--optimizer')
 @click.option('--optconf', type=EqDelimStringParamType(), multiple=True)
 def cls(
@@ -236,8 +238,6 @@ def cls(
         wspec = json.load(specstream)
 
     w = Workspace(wspec)
-
-    is_qtilde = teststat == 'qtilde'
 
     patches = [json.loads(click.open_file(pfile, 'r').read()) for pfile in patch]
     p = w.model(
@@ -256,7 +256,9 @@ def cls(
         new_optimizer = getattr(optimize, optimizer)
         set_backend(tensorlib, new_optimizer(**optconf))
 
-    result = hypotest(testpoi, w.data(p), p, qtilde=is_qtilde, return_expected_set=True)
+    result = hypotest(
+        testpoi, w.data(p), p, test_statistic=teststat, return_expected_set=True
+    )
     result = {'CLs_obs': result[0].tolist()[0], 'CLs_exp': result[-1].ravel().tolist()}
 
     if output_file is None:
