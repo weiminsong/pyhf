@@ -5,7 +5,7 @@ import json
 
 from ..utils import hypotest, EqDelimStringParamType
 from ..workspace import Workspace
-from .. import tensor, get_backend, set_backend, optimize
+from .. import get_backend, set_backend, optimize
 
 logging.basicConfig()
 log = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ def cls(
 
     # set the backend if not NumPy
     if backend in ['pytorch', 'torch']:
-        set_backend("pytroch")
+        set_backend("pytorch")
     elif backend in ['tensorflow', 'tf']:
         from tensorflow.compat.v1 import Session
 
