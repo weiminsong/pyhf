@@ -120,6 +120,10 @@ class pytorch_backend(object):
             tensor = tensor.expand(1)
         return tensor
 
+
+    def swapaxes(self, tensor, ax1,ax2):
+        return torch.transpose(tensor,ax1,ax2)
+
     def gather(self, tensor, indices):
         return tensor[indices.type(torch.LongTensor)]
 
