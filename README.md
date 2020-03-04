@@ -6,6 +6,7 @@
 
 [![GitHub Project](https://img.shields.io/badge/GitHub--blue?style=social&logo=GitHub)](https://github.com/scikit-hep/pyhf)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1169739.svg)](https://doi.org/10.5281/zenodo.1169739)
+[![Scikit-HEP](https://scikit-hep.org/assets/images/Scikit--HEP-Project-blue.svg)](https://scikit-hep.org/)
 
 [![GitHub Actions Status: CI](https://github.com/scikit-hep/pyhf/workflows/CI/CD/badge.svg)](https://github.com/scikit-hep/pyhf/actions?query=workflow%3ACI%2FCD+branch%3Amaster)
 [![GitHub Actions Status: Publish](https://github.com/scikit-hep/pyhf/workflows/publish%20distributions/badge.svg)](https://github.com/scikit-hep/pyhf/actions?query=workflow%3A%22publish+distributions%22+branch%3Amaster)
@@ -23,8 +24,8 @@
 [![Docker Stars](https://img.shields.io/docker/stars/pyhf/pyhf.svg)](https://hub.docker.com/r/pyhf/pyhf/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/pyhf/pyhf.svg)](https://hub.docker.com/r/pyhf/pyhf/)
 
-The HistFactory p.d.f. template [[CERN-OPEN-2012-016](https://cds.cern.ch/record/1456844)] is per-se independent of its implementation in ROOT and sometimes, it's useful to be able to run statistical analysis outside
-of ROOT, RooFit, RooStats framework.
+The HistFactory p.d.f. template [[CERN-OPEN-2012-016](https://cds.cern.ch/record/1456844)] is per-se independent of its implementation in ROOT and sometimes, it's useful to be able to run statistical analysis outside of ROOT, RooFit, RooStats framework.
+
 
 This repo is a pure-python implementation of that statistical model for multi-bin histogram-based analysis and its interval estimation is based on the asymptotic formulas of "Asymptotic formulae for likelihood-based tests of new physics" [[arXiv:1007.1727](https://arxiv.org/abs/1007.1727)]. The aim is also to support modern computational graph libraries such as PyTorch and TensorFlow in order to make use of features such as autodifferentiation and GPU acceleration.
 
@@ -108,6 +109,32 @@ or a subset of the options.
 To uninstall run
 ```bash
 python -m pip uninstall pyhf
+```
+
+## Questions
+
+If you have a question about the use of `pyhf` not covered in [the documentation](https://scikit-hep.org/pyhf/), please ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/pyhf) with the `[pyhf]` tag, which the `pyhf` dev team [watches](https://stackoverflow.com/questions/tagged/pyhf?sort=Newest&filters=NoAcceptedAnswer&edited=true).
+
+<p align="center">
+<a href="https://stackoverflow.com/questions/tagged/pyhf">
+<img src="https://cdn.sstatic.net/Sites/stackoverflow/company/img/logos/so/so-logo.png" alt="Stack Overflow pyhf tag" width="50%"/>
+</a>
+</p>
+
+If you believe you have found a bug in `pyhf`, please report it in the [GitHub Issues](https://github.com/scikit-hep/pyhf/issues/new?template=Bug-Report.md&labels=bug&title=Bug+Report+:+Title+Here).
+
+## Citation
+
+As noted in [Use and Citations](https://scikit-hep.org/pyhf/citations.html), the preferred BibTeX entry for citation of `pyhf` is
+
+```bibtex
+@software{pyhf,
+  author = "{Heinrich, Lukas and Feickert, Matthew and Stark, Giordon}",
+  title = "{pyhf: v0.4.1}",
+  version = {0.4.1},
+  doi = {10.5281/zenodo.1169739},
+  url = {https://github.com/scikit-hep/pyhf},
+}
 ```
 
 ## Authors

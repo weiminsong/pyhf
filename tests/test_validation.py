@@ -4,6 +4,7 @@ import pyhf.readxml
 import json
 import pytest
 import os
+import numpy as np
 
 
 @pytest.fixture(scope='module')
@@ -188,11 +189,11 @@ def expected_result_1bin_normsys(mu=1.0):
     if mu == 1:
         expected_result = {
             "exp": [
-                7.471694618861785e-10,
+                7.471684419037561e-10,
                 5.7411551509088054e-08,
-                3.6898088058290313e-06,
-                0.000169657315363677,
-                0.004392708998183163,
+                3.6898088062731205e-06,
+                0.00016965731538267896,
+                0.004392708998555453,
             ],
             "obs": 0.0006735317023683173,
         }
@@ -700,7 +701,6 @@ def validate_hypotest(pdf, data, mu_test, expected_result, tolerance=1e-6):
         return_expected_set=True,
         qtilde=False,
     )
-
     assert abs(CLs_obs - expected_result['obs']) / expected_result['obs'] < tolerance
     for result, expected in zip(CLs_exp_set, expected_result['exp']):
         assert abs(result - expected) / expected < tolerance
@@ -846,3 +846,80 @@ def test_import_roundtrip(tmpdir, toplvl, basedir):
     assert abs(CLs_obs_after - CLs_obs_before) / CLs_obs_before < tolerance
     for result, expected_result in zip(CLs_exp_set_after, CLs_exp_set_before):
         assert abs(result - expected_result) / expected_result < tolerance
+
+
+def test_shapesys_nuisparfilter_validation():
+    reference_root_results = {
+        "CLs_exp": [
+            2.702197937866914e-05,
+            0.00037099917612576155,
+            0.004360634386335687,
+            0.03815031509701916,
+            0.20203027564155074,
+        ],
+        "CLs_obs": 0.004360634405484502,
+    }
+    null = None
+    spec = {
+        "channels": [
+            {
+                "name": "channel1",
+                "samples": [
+                    {
+                        "data": [20, 10],
+                        "modifiers": [
+                            {
+                                "data": null,
+                                "name": "SigXsecOverSM",
+                                "type": "normfactor",
+                            }
+                        ],
+                        "name": "signal",
+                    },
+                    {
+                        "data": [100, 10],
+                        "modifiers": [
+                            {"data": [10, 0], "name": "syst", "type": "shapesys"}
+                        ],
+                        "name": "background1",
+                    },
+                ],
+            }
+        ],
+        "measurements": [
+            {
+                "config": {
+                    "parameters": [
+                        {
+                            "auxdata": [1],
+                            "bounds": [[0.5, 1.5]],
+                            "inits": [1],
+                            "name": "lumi",
+                            "sigmas": [0.1],
+                        }
+                    ],
+                    "poi": "SigXsecOverSM",
+                },
+                "name": "GaussExample",
+            }
+        ],
+        "observations": [{"data": [100, 10], "name": "channel1"}],
+        "version": "1.0.0",
+    }
+    w = pyhf.Workspace(spec)
+    m = w.model(
+        modifier_settings={
+            'normsys': {'interpcode': 'code4'},
+            'histosys': {'interpcode': 'code4p'},
+        },
+    )
+    d = w.data(m)
+    obs, exp = pyhf.infer.hypotest(1.0, d, m, return_expected_set=True)
+    pyhf_results = {'CLs_obs': obs[0], 'CLs_exp': [e[0] for e in exp]}
+
+    assert np.allclose(
+        reference_root_results['CLs_obs'], pyhf_results['CLs_obs'], atol=1e-4, rtol=1e-5
+    )
+    assert np.allclose(
+        reference_root_results['CLs_exp'], pyhf_results['CLs_exp'], atol=1e-4, rtol=1e-5
+    )
