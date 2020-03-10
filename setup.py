@@ -95,7 +95,7 @@ setup(
     include_package_data=True,
     python_requires=">=3.6",
     install_requires=[
-        'scipy',  # requires numpy, which is required by pyhf and tensorflow
+        'scipy>=1.4.0',  # requires numpy, which is required by pyhf and tensorflow
         'click>=6.0',  # for console scripts,
         'tqdm',  # for readxml
         'jsonschema>=v3.0.0a2',  # for utils, alpha-release for draft 6
